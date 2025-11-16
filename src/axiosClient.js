@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const axiosClient = axios.create({
@@ -7,10 +6,9 @@ const axiosClient = axios.create({
   withCredentials: true,
 });
 
-
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -18,5 +16,3 @@ axiosClient.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
-export default axiosClient;

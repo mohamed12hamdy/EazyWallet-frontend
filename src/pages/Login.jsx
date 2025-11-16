@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
+import {jwtDecode} from "jwt-decode"; // صحح الاستيراد
 
 function Login() {
   const navigate = useNavigate();
@@ -34,13 +35,24 @@ function Login() {
 
     try {
       const res = await axiosClient.post("/auth/login", form);
-      console.log("Login response:", res.data);
-      const token = res.data.data;
+      const token = res.data.data; // تأكد من مكان التوكن في API
+
+      console.log("Received Token:", token);
+
       if (token) {
-        localStorage.setItem("token", token); 
+        localStorage.setItem("token", token); // خزنه في localStorage
+        const decoded = jwtDecode(token);
+        const role = decoded.role;
+
+        console.log("ROLE:", role);
+        if (role === "ADMIN") {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       }
+
       setSuccess(res.data?.message || "Logged in successfully!");
-      navigate("/dashboard");
     } catch (err) {
       console.log("Login error:", err.response?.data || err);
       setError(err.response?.data?.message || "Login failed");
@@ -119,3 +131,4 @@ function Login() {
 }
 
 export default Login;
+
