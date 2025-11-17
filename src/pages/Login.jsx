@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../axiosClient";
-import {jwtDecode} from "jwt-decode"; // صحح الاستيراد
+
+import {jwtDecode} from "jwt-decode"; 
 
 function Login() {
   const navigate = useNavigate();
@@ -35,12 +36,12 @@ function Login() {
 
     try {
       const res = await axiosClient.post("/auth/login", form);
-      const token = res.data.data; // تأكد من مكان التوكن في API
+      const token = res.data.data; 
 
       console.log("Received Token:", token);
 
       if (token) {
-        localStorage.setItem("token", token); // خزنه في localStorage
+        localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
         const role = decoded.role;
 

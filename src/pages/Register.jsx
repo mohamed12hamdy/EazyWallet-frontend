@@ -108,19 +108,29 @@ function Register() {
                             </form>
 
                             <p className="text-center mt-3">
-                                Already have an account?{" "}
                                 <span
                                     onClick={() => navigate("/login")}
                                     style={{
-                                        color: "#0d6efd",
                                         cursor: "pointer",
-                                        textDecoration: "underline"
+                                        color: "#0d6efd", // أزرق Bootstrap
+                                        fontWeight: "500",
+                                        textDecoration: "none",
+                                        padding: "6px 12px",
+                                        borderRadius: "4px",
+                                        transition: "all 0.3s",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = "#e7f1ff"; // لون خلفية خفيف عند hover
+                                        e.target.style.color = "#0a58ca"; // أزرق أغمق عند hover
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = "transparent";
+                                        e.target.style.color = "#0d6efd";
                                     }}
                                 >
-                                    Login
+                                    Already have an account? Login
                                 </span>
                             </p>
-
 
                         </div>
                     </div>

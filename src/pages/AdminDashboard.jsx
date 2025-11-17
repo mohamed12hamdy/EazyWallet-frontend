@@ -1,26 +1,26 @@
 import { useState } from "react";
-import axiosClient from "../axiosClient";
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../axiosClient";
 
 function AdminDashboard() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("register");
 
-  // Register Admin
+  
   const [registerForm, setRegisterForm] = useState({ name: "", email: "", password: "" });
 
-  // Users
+ 
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(5);
 
-  // Transactions
+ 
   const [transactions, setTransactions] = useState([]);
   const [userId, setUserId] = useState("");
   const [transactionType, setTransactionType] = useState("");
 
-  // Message
+  
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info"); // info, success, danger
 
@@ -29,23 +29,30 @@ function AdminDashboard() {
     navigate("/login");
   };
 
+  // Helper function to show a message for 1 minute
+  const showMessage = (text, type = "info") => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => {
+      setMessage("");
+    }, 3000); // 1 minute
+  };
+
   const validateRegisterForm = () => {
     if (registerForm.name.length < 3) {
-      setMessageType("danger");
-      setMessage("Name must be at least 3 characters");
+      showMessage("Name must be at least 3 characters", "danger");
       return false;
     }
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(registerForm.email)) {
-      setMessageType("danger");
-      setMessage("Email must be valid");
+      showMessage("Email must be valid", "danger");
       return false;
     }
     const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$/;
     if (!passwordRegex.test(registerForm.password)) {
-      setMessageType("danger");
-      setMessage(
-        "Password must be at least 8 chars, include uppercase, lowercase, number & special char"
+      showMessage(
+        "Password must be at least 8 chars, include uppercase, lowercase, number & special char",
+        "danger"
       );
       return false;
     }
@@ -56,36 +63,28 @@ function AdminDashboard() {
     e.preventDefault();
     if (!validateRegisterForm()) return;
 
-    console.log("Token:", localStorage.getItem("token"))
-
     try {
       const res = await axiosClient.post("/admin/register", registerForm);
-      
-      setMessageType("success");
-      setMessage(res.data.message);
+      showMessage(res.data.message, "success");
       setRegisterForm({ name: "", email: "", password: "" });
     } catch (err) {
-      setMessageType("danger");
-      setMessage(err.response?.data?.message || "Register failed");
+      showMessage(err.response?.data?.message || "Register failed", "danger");
     }
   };
 
   const fetchUsers = async () => {
     try {
-      const res = await axiosClient.get("/auth/users", { params: { page, size } });
+      const res = await axiosClient.get("/admin/users", { params: { page, size } });
       setUsers(res.data.content || res.data);
-      setMessageType("success");
-      setMessage("Users fetched successfully");
+      showMessage("Users fetched successfully", "success");
     } catch (err) {
-      setMessageType("danger");
-      setMessage(err.response?.data?.message || "Failed to fetch users");
+      showMessage(err.response?.data?.message || "Failed to fetch users", "danger");
     }
   };
 
   const fetchUserTransactions = async () => {
     if (!userId) {
-      setMessageType("danger");
-      setMessage("Please enter a user UUID");
+      showMessage("Please enter a user UUID", "danger");
       return;
     }
     try {
@@ -93,11 +92,9 @@ function AdminDashboard() {
         params: { type: transactionType, page, size },
       });
       setTransactions(res.data.content || res.data);
-      setMessageType("success");
-      setMessage("Transactions fetched successfully");
+      showMessage("Transactions fetched successfully", "success");
     } catch (err) {
-      setMessageType("danger");
-      setMessage(err.response?.data?.message || "Failed to fetch transactions");
+      showMessage(err.response?.data?.message || "Failed to fetch transactions", "danger");
     }
   };
 
